@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const formEditar = document.querySelector("#formEditarGasto");
   const modalEditarGasto = document.getElementById("modalEditarGasto");
 
+  actualizarContadorGastos();
+
   // Crear gasto
   form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -28,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         } else if (data.status === "warning") {
           Swal.fire("¡Advertencia!", data.message, "warning").then(() => {
-            location.reload();
+            //location.reload();
           });
         } else {
           Swal.fire("Error", data.message, "error");
@@ -41,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Cargar datos al modal
-
   modalEditarGasto.addEventListener("show.bs.modal", function (event) {
     const button = event.relatedTarget;
     const id = button.getAttribute("data-id");
@@ -111,7 +112,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // aria
+  // Eliminar gasto
+  document.addEventListener("click", function (event) {
+    if (event.target.closest(".eliminar-gasto")) {
+      const btn = event.target.closest(".eliminar-gasto");
+      const id = btn.getAttribute("data-id");
+  
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`php/modules/gastoController.php?action=delete&id=${id}`, {
+            method: "GET"
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === "success") {
+              Swal.fire("Éxito", data.message, "success").then(() => {
+                location.reload();
+              });
+            } else {
+              Swal.fire("Error", data.message, "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error al Eliminar:", error);
+            Swal.fire("Error", "No se pudo Eliinar el gasto", "error");
+          });
+          
+        }
+      });
+    }
+  });
 
-
+  // Contar Cantidad Gastos
+  async function actualizarContadorGastos() {
+    const res = await fetch("php/modules/gastoController.php?action=contar");
+    const data = await res.json();
+    document.querySelector("#contador-gastos").textContent = data.total;
+  } 
+  
 });

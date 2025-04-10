@@ -6,12 +6,31 @@ require_once __DIR__ . '/gastoServices.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $gastoService = new GastoServices();
 
-if ($method === 'GET' && isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $gasto = $gastoService->obtenerGastoPorId($id);
-    header('Content-Type: application/json');
-    echo json_encode($gasto);
-    exit;
+
+if ($method === 'GET') {
+
+    if ($_GET['action'] === 'contar') {
+        //$servicio = new GastoService();
+        echo json_encode(['total' => $gastoService->contarTotalGastos()]);
+        //exit;
+    }
+    if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        if ($gastoService->borrarGasto($id)) {
+            echo json_encode(["status" => "success", "message" => "Gasto eliminado correctamente"]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Error al eliminar el gasto"]);
+        }
+        exit;
+    }
+
+    if (isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        $gasto = $gastoService->obtenerGastoPorId($id);
+        header('Content-Type: application/json');
+        echo json_encode($gasto);
+        exit;
+    }
 }
 
 if ($method === 'POST') {
@@ -31,7 +50,6 @@ if ($method === 'POST') {
         }
 
         if ($gastoService->registrarGasto($gasto)) {
-            
             echo json_encode(["status" => "success", "message" => "Gasto registrado correctamente"]);
         } else {
             echo json_encode(["status" => "error", "message" => "Error al registrar el gasto"]);
@@ -52,6 +70,3 @@ if ($method === 'POST') {
         exit;
     }
 }
-
-http_response_code(400);
-echo json_encode(["status" => "error", "message" => "Solicitud no válida"]);

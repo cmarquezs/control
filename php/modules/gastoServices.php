@@ -74,4 +74,25 @@ class GastoServices
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function borrarGasto($id)
+    {
+        try {
+            $sql = "DELETE FROM gastos WHERE ID = :id";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (Exception $e) {
+            echo "Error al eliminar: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function contarTotalGastos()
+    {
+        $sql = "SELECT COUNT(*) as total FROM gastos";
+        return $this->conexion->query($sql)->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+    
+
 }

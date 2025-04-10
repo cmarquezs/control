@@ -29,12 +29,12 @@
                             data-descripcion="<?= htmlspecialchars($gasto['Descripcion']) ?>"
                             data-categoria="<?= $gasto['Categoria'] ?>"
                             data-precio="<?= $gasto['Precio'] ?>">
-                            Editar
+                            <i class="bi bi-pencil-square"></i>
                         </button>
-                        <button class="btn btn-danger eliminar-gasto"
-                            data-id="<?= $gasto['ID'] ?>">
-                            Eliminar
+                        <button class="btn btn-danger eliminar-gasto" data-id="<?= $gasto['ID'] ?>">
+                            <i class="bi bi-trash"></i>
                         </button>
+
                     </td>
                 </tr>
             <?php endforeach; ?>
